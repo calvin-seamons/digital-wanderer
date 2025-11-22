@@ -1,39 +1,44 @@
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
-
-function FloatingSphere({ position, color }) {
-    const meshRef = useRef();
-
-    useFrame((state) => {
-        meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime + position[0]) * 0.5;
-        meshRef.current.rotation.x += 0.01;
-        meshRef.current.rotation.y += 0.01;
-    });
-
-    return (
-        <mesh ref={meshRef} position={position}>
-            <sphereGeometry args={[1, 32, 32]} />
-            <meshStandardMaterial color={color} metalness={0.9} roughness={0.1} />
-        </mesh>
-    );
-}
+import { Sky } from '@react-three/drei';
+import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import Portal from './Portal';
 
 export default function AbstractIsland() {
     return (
         <group>
-            <color attach="background" args={['#ffffff']} />
-            <ambientLight intensity={1} />
+            {/* Lighting */}
+            <Sky sunPosition={[100, 20, 100]} />
+            <ambientLight intensity={0.5} />
+            <pointLight position={[0, 10, 0]} intensity={2} />
 
-            {/* Wireframe Ground */}
-            <gridHelper args={[100, 20, 0x000000, 0xcccccc]} />
+            {/* TODO: Add your Level 3 environment here */}
 
-            {/* Floating Spheres */}
-            <FloatingSphere position={[-5, 3, -10]} color="#ff00ff" />
-            <FloatingSphere position={[5, 4, -15]} color="#00ffff" />
-            <FloatingSphere position={[0, 6, -20]} color="#ffff00" />
-            <FloatingSphere position={[-8, 2, 5]} color="#ff0000" />
-            <FloatingSphere position={[8, 5, 10]} color="#0000ff" />
+            {/* Ground plane */}
+            <RigidBody type="fixed" colliders={false}>
+                <CuboidCollider args={[50, 0.1, 50]} position={[0, -0.1, 0]} />
+            </RigidBody>
+
+            {/* Temporary visual ground */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+                <planeGeometry args={[100, 100]} />
+                <meshStandardMaterial color="#ffffff" />
+            </mesh>
+
+            {/* Boundary walls */}
+            <RigidBody type="fixed" colliders={false}>
+                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, -35]} />
+                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, 35]} />
+                <CuboidCollider args={[0.5, 15, 40]} position={[35, 7, 0]} />
+                <CuboidCollider args={[0.5, 15, 40]} position={[-35, 7, 0]} />
+                <CuboidCollider args={[100, 0.5, 100]} position={[0, -50, 0]} />
+            </RigidBody>
+
+            {/* Portals */}
+            <Portal
+                position={[0, 0, 0]}
+                targetLevel={2}
+                targetSpawn={[0, 1.6, -40]}
+                label="Back to Level 2"
+            />
         </group>
     );
 }

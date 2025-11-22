@@ -1,45 +1,44 @@
-import { useMemo } from 'react';
-import { Environment } from '@react-three/drei';
-
-function Tree({ position }) {
-    return (
-        <group position={position}>
-            {/* Trunk */}
-            <mesh position={[0, 1, 0]}>
-                <cylinderGeometry args={[0.2, 0.4, 2, 8]} />
-                <meshStandardMaterial color="#8B4513" />
-            </mesh>
-            {/* Leaves */}
-            <mesh position={[0, 2.5, 0]}>
-                <coneGeometry args={[1.5, 3, 8]} />
-                <meshStandardMaterial color="#228B22" />
-            </mesh>
-        </group>
-    );
-}
+import { useGLTF, Environment, Sky } from '@react-three/drei';
+import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import Portal from './Portal';
 
 export default function NatureIsland() {
-    const trees = useMemo(() => {
-        return new Array(50).fill(0).map(() => ({
-            x: (Math.random() - 0.5) * 80,
-            z: (Math.random() - 0.5) * 80,
-        }));
-    }, []);
+    const { scene } = useGLTF('/Nature.glb');
 
     return (
         <group>
-            <Environment preset="sunset" background />
+            <Sky sunPosition={[100, 20, 100]} />
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 10]} />
 
-            {/* Ground */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-                <planeGeometry args={[100, 100]} />
-                <meshStandardMaterial color="#90EE90" />
-            </mesh>
+            {/* Model with automatic collision from geometry */}
+            <RigidBody type="fixed" colliders="trimesh">
+                <primitive object={scene} position={[0, -10, 0]} scale={[20, 20, 20]} />
+            </RigidBody>
 
-            {/* Trees */}
-            {trees.map((pos, i) => (
-                <Tree key={i} position={[pos.x, 0, pos.z]} />
-            ))}
+            {/* Invisible boundary walls to prevent falling off */}
+            <RigidBody type="fixed" colliders={false}>
+                {/* North wall */}
+                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, -35]} />
+                {/* South wall */}
+                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, 35]} />
+                {/* East wall */}
+                <CuboidCollider args={[0.5, 15, 40]} position={[35, 7, 0]} />
+                {/* West wall */}
+                <CuboidCollider args={[0.5, 15, 40]} position={[-35, 7, 0]} />
+
+                {/* Safety net floor far below to catch falling players */}
+                <CuboidCollider args={[100, 0.5, 100]} position={[0, -50, 0]} />
+            </RigidBody>
+
+            {/* Portals - Positioned within the map area */}
+            {/* Exit to Level 2 */}
+            <Portal
+                position={[0, -10, -30]}
+                targetLevel={2}
+                targetSpawn={[0, 1.6, 30]}
+                label="To Industrial Zone"
+            />
         </group>
     );
 }

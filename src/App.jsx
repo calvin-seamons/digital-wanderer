@@ -1,4 +1,5 @@
 import { Canvas } from "@react-three/fiber";
+import { Physics } from "@react-three/rapier";
 import Player from "./Player";
 import Effects from "./Effects";
 import { useStore } from "./store";
@@ -7,6 +8,7 @@ import IndustrialIsland from "./IndustrialIsland";
 import AbstractIsland from "./AbstractIsland";
 import TransitionOverlay from "./TransitionOverlay";
 import AudioManager from "./AudioManager";
+import MinimapDisplay, { MinimapTracker } from "./Minimap";
 
 function LevelIndicator() {
   const level = useStore((state) => state.level);
@@ -34,10 +36,14 @@ export default function App() {
       <TransitionOverlay />
       <AudioManager />
       <LevelIndicator />
+      <MinimapDisplay />
       <Canvas>
-        <Player />
-        <Effects />
-        <CurrentIsland />
+        <Physics gravity={[0, -20, 0]}>
+          <MinimapTracker onUpdate={(pos) => window.__updateMinimap?.(pos)} />
+          <Player />
+          <Effects />
+          <CurrentIsland />
+        </Physics>
       </Canvas>
     </>
   );

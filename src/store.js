@@ -3,13 +3,15 @@ import { create } from 'zustand';
 export const useStore = create((set) => ({
     level: 1,
     isTransitioning: false,
-    nextLevel: () => set((state) => ({ level: state.level + 1 })),
-    resetLevel: () => set({ level: 1 }),
-    triggerTransition: (cb) => {
+    spawnPosition: [0, 1.6, 0], // Default spawn
+    
+    enterPortal: (targetLevel, targetSpawnPos) => {
         set({ isTransitioning: true });
         setTimeout(() => {
-            set((state) => ({ level: state.level + 1 }));
-            if (cb) cb(); // Callback to reset player position
+            set({ 
+                level: targetLevel,
+                spawnPosition: targetSpawnPos 
+            });
             setTimeout(() => {
                 set({ isTransitioning: false });
             }, 1000);

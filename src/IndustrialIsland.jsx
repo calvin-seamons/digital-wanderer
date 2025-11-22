@@ -1,46 +1,46 @@
-import { useMemo } from 'react';
-import { Environment } from '@react-three/drei';
-
-function Building({ position, height }) {
-    return (
-        <mesh position={[position[0], height / 2, position[2]]}>
-            <boxGeometry args={[3, height, 3]} />
-            <meshStandardMaterial color="#444" roughness={0.2} metalness={0.8} />
-        </mesh>
-    );
-}
+import { Sky } from '@react-three/drei';
+import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import Portal from './Portal';
+import IndustrialInspector from './IndustrialInspector';
 
 export default function IndustrialIsland() {
-    const buildings = useMemo(() => {
-        const items = [];
-        for (let i = 0; i < 40; i++) {
-            items.push({
-                x: (Math.random() - 0.5) * 80,
-                z: (Math.random() - 0.5) * 80,
-                height: 5 + Math.random() * 15,
-            });
-        }
-        return items;
-    }, []);
-
     return (
         <group>
-            <Environment preset="city" background />
-            <fog attach="fog" args={['#202020', 5, 60]} />
+            {/* Lighting */}
+            <Sky sunPosition={[100, 20, 100]} />
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 20, 5]} intensity={1} color="#ffffff" />
 
-            {/* Harsh Red Light */}
-            <directionalLight position={[10, 20, 5]} intensity={2} color="#ff3333" />
+            {/* Inspector - logs all meshes to console */}
+            <IndustrialInspector />
 
-            {/* Ground */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-                <planeGeometry args={[100, 100]} />
-                <meshStandardMaterial color="#222" roughness={0.8} />
-            </mesh>
+            {/* Ground plane */}
+            <RigidBody type="fixed" colliders={false}>
+                <CuboidCollider args={[50, 0.1, 50]} position={[0, -0.1, 0]} />
+            </RigidBody>
 
-            {/* Buildings */}
-            {buildings.map((b, i) => (
-                <Building key={i} position={[b.x, 0, b.z]} height={b.height} />
-            ))}
+            {/* Boundary walls */}
+            <RigidBody type="fixed" colliders={false}>
+                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, -35]} />
+                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, 35]} />
+                <CuboidCollider args={[0.5, 15, 40]} position={[35, 7, 0]} />
+                <CuboidCollider args={[0.5, 15, 40]} position={[-35, 7, 0]} />
+                <CuboidCollider args={[100, 0.5, 100]} position={[0, -50, 0]} />
+            </RigidBody>
+
+            {/* Portals */}
+            <Portal
+                position={[0, 0, 45]}
+                targetLevel={1}
+                targetSpawn={[0, 1.6, -25]}
+                label="Back to Nature"
+            />
+            <Portal
+                position={[0, 0, -45]}
+                targetLevel={3}
+                targetSpawn={[0, 1.6, 0]}
+                label="To Level 3"
+            />
         </group>
     );
 }
