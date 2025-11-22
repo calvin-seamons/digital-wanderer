@@ -83,11 +83,12 @@ export default function Player() {
         camera.position.y = 1.6;
 
         // Trigger Logic: Check if player reached the edge
-        if (camera.position.z > 50) {
-            const { nextLevel, level } = useStore.getState();
-            if (level < 3) {
-                nextLevel();
-                camera.position.set(0, 1.6, 0); // Reset position
+        if (Math.abs(camera.position.z) > 50) {
+            const { triggerTransition, level, isTransitioning } = useStore.getState();
+            if (level < 3 && !isTransitioning) {
+                triggerTransition(() => {
+                    camera.position.set(0, 1.6, 0); // Reset position callback
+                });
             }
         }
     });
