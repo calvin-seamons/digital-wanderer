@@ -85,6 +85,19 @@ export default function Player() {
         }
     }, [spawnPosition, isTransitioning]);
 
+    // Debug teleport listener
+    useEffect(() => {
+        const handleTeleport = (e) => {
+            if (playerRef.current) {
+                const { x, y, z } = e.detail;
+                playerRef.current.setTranslation({ x, y, z }, true);
+                playerRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+            }
+        };
+        window.addEventListener('debug-teleport', handleTeleport);
+        return () => window.removeEventListener('debug-teleport', handleTeleport);
+    }, []);
+
     useFrame(({ camera }) => {
         if (!playerRef.current) return;
 

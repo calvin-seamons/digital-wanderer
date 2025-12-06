@@ -1,45 +1,47 @@
 import { Sky } from '@react-three/drei';
-import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import Portal from './Portal';
-import IndustrialInspector from './IndustrialInspector';
+import IndustrialLayout from './IndustrialLayout';
 
 export default function IndustrialIsland() {
     return (
         <group>
-            {/* Lighting */}
-            <Sky sunPosition={[100, 20, 100]} />
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 20, 5]} intensity={1} color="#ffffff" />
+            {/* Lighting - Industrial/overcast feel */}
+            <Sky 
+                sunPosition={[50, 10, 0]} 
+                turbidity={10}
+                rayleigh={0.5}
+            />
+            <ambientLight intensity={0.4} />
+            <directionalLight 
+                position={[20, 30, 10]} 
+                intensity={0.8} 
+                color="#ffe4c4"
+                castShadow
+            />
+            {/* Secondary fill light */}
+            <directionalLight 
+                position={[-10, 10, -10]} 
+                intensity={0.3} 
+                color="#b0c4de"
+            />
 
-            {/* Inspector - logs all meshes to console */}
-            <IndustrialInspector />
+            {/* Main level layout with collision */}
+            <IndustrialLayout />
 
-            {/* Ground plane */}
-            <RigidBody type="fixed" colliders={false}>
-                <CuboidCollider args={[50, 0.1, 50]} position={[0, -0.1, 0]} />
-            </RigidBody>
-
-            {/* Boundary walls */}
-            <RigidBody type="fixed" colliders={false}>
-                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, -35]} />
-                <CuboidCollider args={[40, 15, 0.5]} position={[0, 7, 35]} />
-                <CuboidCollider args={[0.5, 15, 40]} position={[35, 7, 0]} />
-                <CuboidCollider args={[0.5, 15, 40]} position={[-35, 7, 0]} />
-                <CuboidCollider args={[100, 0.5, 100]} position={[0, -50, 0]} />
-            </RigidBody>
-
-            {/* Portals */}
+            {/* Portals - positioned within the designed layout */}
+            {/* North portal - back to Nature */}
             <Portal
-                position={[0, 0, 45]}
+                position={[0, 1, 28]}
                 targetLevel={1}
                 targetSpawn={[0, 1.6, -25]}
                 label="Back to Nature"
             />
+
             <Portal
-                position={[0, 0, -45]}
+                position={[0, 1, -28]}
                 targetLevel={3}
                 targetSpawn={[0, 1.6, 0]}
-                label="To Level 3"
+                label="To Re-evaluation"
             />
         </group>
     );

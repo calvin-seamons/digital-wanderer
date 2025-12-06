@@ -36,7 +36,7 @@ export default function NatureIsland() {
             <Portal
                 position={[0, -10, -30]}
                 targetLevel={2}
-                targetSpawn={[0, 1.6, 30]}
+                targetSpawn={[0, 1.6, 20]}
                 label="To Industrial Zone"
             />
         </group>

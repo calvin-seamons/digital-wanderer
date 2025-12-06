@@ -24,8 +24,8 @@ export default function Effects() {
                 </>
             )}
 
-            {/* Level 2: Industrial - Harsh & Gritty */}
-            {level === 2 && (
+            {/* Level 2: Industrial - Effects disabled for development */}
+            {/* {level === 2 && (
                 <>
                     <Noise
                         premultiply
@@ -46,16 +46,8 @@ export default function Effects() {
                         ratio={0.85}
                     />
                 </>
-            )}
+            )} */}
 
-            {/* Level 3: Reevaluation - Digital/Clean */}
-            {level === 3 && (
-                <>
-                    <Pixelation
-                        granularity={10}
-                    />
-                </>
-            )}
         </EffectComposer>
     );
 }

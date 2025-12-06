@@ -9,6 +9,7 @@ import AbstractIsland from "./AbstractIsland";
 import TransitionOverlay from "./TransitionOverlay";
 import AudioManager from "./AudioManager";
 import MinimapDisplay, { MinimapTracker } from "./Minimap";
+import DebugOverlay, { DebugHelper } from "./DebugOverlay";
 
 function LevelIndicator() {
   const level = useStore((state) => state.level);
@@ -37,9 +38,11 @@ export default function App() {
       <AudioManager />
       <LevelIndicator />
       <MinimapDisplay />
+      <DebugOverlay />
       <Canvas>
         <Physics gravity={[0, -20, 0]}>
           <MinimapTracker onUpdate={(pos) => window.__updateMinimap?.(pos)} />
+          <DebugHelper />
           <Player />
           <Effects />
           <CurrentIsland />
