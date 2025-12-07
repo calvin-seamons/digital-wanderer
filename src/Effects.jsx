@@ -7,7 +7,7 @@ export default function Effects() {
 
     return (
         <EffectComposer disableNormalPass>
-            {/* Level 1: Romanticism - Soft & Hazy */}
+            {/* The Pastoral: Soft & Hazy Romanticism */}
             {level === 1 && (
                 <>
                     <Bloom
@@ -24,7 +24,7 @@ export default function Effects() {
                 </>
             )}
 
-            {/* Level 2: Industrial - Effects disabled for development */}
+            {/* The Machine: Industrial - Effects disabled for development */}
             {/* {level === 2 && (
                 <>
                     <Noise

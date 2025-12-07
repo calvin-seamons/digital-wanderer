@@ -3,7 +3,7 @@ import { create } from 'zustand';
 export const useStore = create((set) => ({
     level: 1,
     isTransitioning: false,
-    spawnPosition: [0, 1.6, 0], // Default spawn
+    spawnPosition: [5.82, -9.71, 25.76], // The Pastoral spawn point
     
     enterPortal: (targetLevel, targetSpawnPos) => {
         set({ isTransitioning: true });

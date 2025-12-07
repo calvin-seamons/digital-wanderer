@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Text, useCursor } from '@react-three/drei';
+import { Text, useCursor, Billboard } from '@react-three/drei';
 import { useStore } from './store';
 import * as THREE from 'three';
 
@@ -44,16 +44,18 @@ export default function Portal({ position, targetLevel, targetSpawn, label }) {
                 <meshBasicMaterial color={hovered ? "#00ffff" : "#0088ff"} transparent opacity={0.6} side={THREE.DoubleSide} />
             </mesh>
 
-            {/* Label */}
-            <Text
-                position={[0, 2, 0]}
-                fontSize={0.5}
-                color="white"
-                anchorX="center"
-                anchorY="middle"
-            >
-                {label || `To Level ${targetLevel}`}
-            </Text>
+            {/* Label - Billboard makes it always face the camera */}
+            <Billboard>
+                <Text
+                    position={[0, 2, 0]}
+                    fontSize={0.5}
+                    color="white"
+                    anchorX="center"
+                    anchorY="middle"
+                >
+                    {label || `To Level ${targetLevel}`}
+                </Text>
+            </Billboard>
 
             {/* Interactive Hitbox for mouse hover (optional hint) */}
             <mesh

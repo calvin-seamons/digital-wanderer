@@ -6,15 +6,20 @@ import { Vector3 } from 'three';
 import { useStore } from './store';
 
 const SPEED = 5;
+const FLY_SPEED = 8;
 const JUMP_VELOCITY = 5;
 
 export default function Player() {
     const playerRef = useRef();
+    const colliderRef = useRef();
     const [moveForward, setMoveForward] = useState(false);
     const [moveBackward, setMoveBackward] = useState(false);
     const [moveLeft, setMoveLeft] = useState(false);
     const [moveRight, setMoveRight] = useState(false);
+    const [moveUp, setMoveUp] = useState(false);
+    const [moveDown, setMoveDown] = useState(false);
     const [canJump, setCanJump] = useState(false);
+    const [flyMode, setFlyMode] = useState(false);
 
     const { rapier, world } = useRapier();
     const spawnPosition = useStore((state) => state.spawnPosition);
@@ -40,10 +45,29 @@ export default function Player() {
                     setMoveRight(true);
                     break;
                 case 'Space':
-                    if (canJump && playerRef.current) {
+                    if (flyMode) {
+                        setMoveUp(true);
+                    } else if (canJump && playerRef.current) {
                         const vel = playerRef.current.linvel();
                         playerRef.current.setLinvel({ x: vel.x, y: JUMP_VELOCITY, z: vel.z }, true);
                     }
+                    break;
+                case 'ShiftLeft':
+                case 'ShiftRight':
+                    if (flyMode) {
+                        setMoveDown(true);
+                    }
+                    break;
+                case 'KeyF':
+                    setFlyMode(prev => {
+                        const next = !prev;
+                        console.log(`🚀 Fly mode: ${next ? 'ON (noclip)' : 'OFF'}`);
+                        // Toggle collider enabled state
+                        if (colliderRef.current) {
+                            colliderRef.current.setEnabled(!next);
+                        }
+                        return next;
+                    });
                     break;
             }
         };
@@ -66,6 +90,13 @@ export default function Player() {
                 case 'KeyD':
                     setMoveRight(false);
                     break;
+                case 'Space':
+                    setMoveUp(false);
+                    break;
+                case 'ShiftLeft':
+                case 'ShiftRight':
+                    setMoveDown(false);
+                    break;
             }
         };
 
@@ -76,7 +107,7 @@ export default function Player() {
             document.removeEventListener('keydown', onKeyDown);
             document.removeEventListener('keyup', onKeyUp);
         };
-    }, [canJump]);
+    }, [canJump, flyMode]);
 
     useEffect(() => {
         if (!isTransitioning && playerRef.current) {
@@ -113,19 +144,41 @@ export default function Player() {
         const frontVector = new Vector3(0, 0, Number(moveBackward) - Number(moveForward));
         const sideVector = new Vector3(Number(moveLeft) - Number(moveRight), 0, 0);
 
-        direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(SPEED);
+        const currentSpeed = flyMode ? FLY_SPEED : SPEED;
+        direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(currentSpeed);
         direction.applyEuler(camera.rotation);
-        direction.y = 0; // Keep horizontal
+        
+        if (flyMode) {
+            // In fly mode: completely bypass physics, move position directly
+            const verticalMove = (Number(moveUp) - Number(moveDown)) * FLY_SPEED * 0.016; // ~60fps
+            const horizontalMove = direction.multiplyScalar(0.016);
+            
+            const newX = position.x + horizontalMove.x;
+            const newY = position.y + horizontalMove.y + verticalMove;
+            const newZ = position.z + horizontalMove.z;
+            
+            // Directly set position (noclip)
+            playerRef.current.setTranslation({ x: newX, y: newY, z: newZ }, true);
+            playerRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+            playerRef.current.setGravityScale(0, true);
+            
+            // Update camera
+            camera.position.set(newX, newY + 0.6, newZ);
+        } else {
+            direction.y = 0; // Keep horizontal when not flying
 
-        // Apply velocity
-        playerRef.current.setLinvel({
-            x: direction.x,
-            y: velocity.y,
-            z: direction.z
-        }, true);
+            // Apply velocity through physics
+            playerRef.current.setLinvel({
+                x: direction.x,
+                y: velocity.y,
+                z: direction.z
+            }, true);
 
-        // Update camera to follow player
-        camera.position.set(position.x, position.y + 0.6, position.z);
+            playerRef.current.setGravityScale(1, true);
+
+            // Update camera to follow player
+            camera.position.set(position.x, position.y + 0.6, position.z);
+        }
     });
 
     return (
@@ -139,7 +192,7 @@ export default function Player() {
                 enabledRotations={[false, false, false]}
                 linearDamping={0.5}
             >
-                <CapsuleCollider args={[0.5, 0.5]} />
+                <CapsuleCollider ref={colliderRef} args={[0.5, 0.5]} />
             </RigidBody>
             <PointerLockControls />
         </>

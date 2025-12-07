@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-Digital Wanderer is a 3D first-person exploration experience built with React Three Fiber. Players navigate through three thematically distinct "islands" (Nature, Industrial, Abstract), each with unique visual post-processing effects conveying different artistic moods.
+Digital Wanderer is a 3D first-person exploration experience built with React Three Fiber. Players navigate through three thematically distinct worlds (The Pastoral, The Machine, Synthesis), each with unique visual post-processing effects conveying different artistic moods representing the cultural shift from nature worship to industrial modernity to environmental synthesis.
 
 ## Commands
 
@@ -34,12 +34,13 @@ App.jsx
 │   └── Physics (Rapier)
 │       ├── Player (first-person controller)
 │       ├── CurrentIsland (level-based switch)
-│       │   ├── NatureIsland (level 1)
-│       │   ├── IndustrialIsland (level 2)
-│       │   └── AbstractIsland (level 3)
+│       │   ├── ThePastoral (level 1 - Romantic nature)
+│       │   ├── TheMachine (level 2 - Industrial/Futurist)
+│       │   └── Synthesis (level 3 - Nature + Technology)
 │       └── Effects (level-specific post-processing)
 ├── TransitionOverlay (fade effect)
 ├── AudioManager (ambient audio per level)
+├── ScrollOverlay (educational content, press P)
 └── MinimapDisplay (HUD)
 ```
 
@@ -66,9 +67,9 @@ Zustand store manages:
 - PointerLockControls for mouse look
 
 **Post-Processing Effects** (`Effects.jsx`):
-- Level 1 (Nature): Bloom + Vignette for soft/romantic feel
-- Level 2 (Industrial): Noise + ChromaticAberration + Glitch for harsh aesthetic
-- Level 3 (Abstract): Pixelation effect
+- The Pastoral: Bloom + Vignette for soft/romantic feel
+- The Machine: Noise + ChromaticAberration + Glitch for harsh aesthetic
+- Synthesis: Ethereal/abstract effects
 
 **Portal Transitions** (`Portal.jsx`):
 - Proximity-based trigger (< 2 units from camera)
@@ -77,8 +78,9 @@ Zustand store manages:
 ### 3D Assets
 
 GLB models stored in `/public`:
-- `Nature.glb` - Nature island environment
-- `Industrial_exterior_v2.glb` - Industrial island
+- `Nature.glb` - The Pastoral environment
+- `Industrial_exterior_v2.glb` - The Machine environment
+- `synthesis-skybox.png` - Synthesis 360° panorama
 - Tree models: `Tree2.glb`, `Tree3.glb`, `rowoftrees.glb`
 
 Load models using `useGLTF('/ModelName.glb')` from drei.
@@ -103,7 +105,13 @@ For simple box/plane colliders:
 
 | Component | Purpose |
 |-----------|---------|
+| `ThePastoral.jsx` | Level 1 - Romantic nature environment |
+| `TheMachine.jsx` | Level 2 - Industrial/Futurist environment |
+| `Synthesis.jsx` | Level 3 - Nature + technology synthesis |
+| `MachineLayout.jsx` | Layout and assets for The Machine level |
+| `MachineAssets.jsx` | Industrial GLB mesh components |
+| `ScrollOverlay.jsx` | Educational scroll popup (press P) |
 | `Waterfall.jsx` | Particle-based waterfall effect (instanced mesh) |
 | `CobblestonePath.jsx` | Procedural curved path using TubeGeometry |
-| `IndustrialInspector.jsx` | Debug utility - logs GLB structure to console |
+| `MachineInspector.jsx` | Debug utility - logs GLB structure to console |
 | `Minimap.jsx` | Exports `MinimapDisplay` (outside Canvas) and `MinimapTracker` (inside Canvas) |

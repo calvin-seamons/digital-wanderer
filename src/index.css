@@ -10,3 +10,214 @@ body, html, #root {
   overflow: hidden;
   background: #000;
 }
+
+/* Scroll Hint */
+.scroll-hint {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Georgia', serif;
+  font-size: 14px;
+  z-index: 10;
+  pointer-events: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  transition: opacity 0.3s ease;
+}
+
+.key-hint {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin: 0 4px;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+/* Scroll Overlay */
+.scroll-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.scroll-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.scroll-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.scroll-container {
+  position: relative;
+  max-width: 600px;
+  max-height: 80vh;
+  margin: 20px;
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
+}
+
+.scroll-overlay.visible .scroll-container {
+  transform: translateY(0);
+}
+
+.scroll-paper {
+  background: linear-gradient(
+    to bottom,
+    #f4e4bc 0%,
+    #f8f0dc 10%,
+    #f8f0dc 90%,
+    #f4e4bc 100%
+  );
+  border-radius: 8px;
+  padding: 40px 50px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 80px rgba(139, 109, 56, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Parchment texture effect */
+.scroll-paper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+/* Decorative edges */
+.scroll-paper::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  border: 2px solid rgba(139, 109, 56, 0.2);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.scroll-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(139, 109, 56, 0.3);
+}
+
+.scroll-title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: normal;
+  color: #3d2914;
+  margin: 0;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.scroll-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #8b6d38;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+  margin-left: 20px;
+}
+
+.scroll-close:hover {
+  color: #3d2914;
+}
+
+.scroll-content {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #4a3a28;
+  max-height: 45vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.scroll-content p {
+  margin: 0 0 1.2em 0;
+  text-align: justify;
+  text-indent: 1.5em;
+}
+
+.scroll-content p:first-child {
+  text-indent: 0;
+}
+
+.scroll-content p:first-child::first-letter {
+  font-size: 48px;
+  float: left;
+  line-height: 1;
+  padding-right: 10px;
+  color: #3d2914;
+  font-weight: bold;
+}
+
+.scroll-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Custom scrollbar for scroll content */
+.scroll-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-content::-webkit-scrollbar-track {
+  background: rgba(139, 109, 56, 0.1);
+  border-radius: 4px;
+}
+
+.scroll-content::-webkit-scrollbar-thumb {
+  background: rgba(139, 109, 56, 0.3);
+  border-radius: 4px;
+}
+
+.scroll-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 109, 56, 0.5);
+}
+
+.scroll-attribution {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 13px;
+  font-style: italic;
+  color: #8b6d38;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(139, 109, 56, 0.3);
+  text-align: right;
+}

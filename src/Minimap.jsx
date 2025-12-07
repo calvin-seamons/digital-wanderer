@@ -32,8 +32,9 @@ export default function MinimapDisplay() {
 
     const portals = useMemo(() => {
         switch (level) {
-            case 1: return [{ x: 0, z: -30, label: 'Exit' }];
-            case 2: return [{ x: 0, z: 50, label: 'Back' }, { x: 0, z: -50, label: 'Next' }];
+            case 1: return [{ x: 0, z: -30, label: 'To The Machine' }];
+            case 2: return [{ x: 0, z: 28, label: 'To The Pastoral' }, { x: 0, z: -28, label: 'To Synthesis' }];
+            case 3: return [{ x: 0, z: -5, label: 'To The Machine' }];
             default: return [];
         }
     }, [level]);
